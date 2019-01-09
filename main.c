@@ -4,29 +4,53 @@
 ** File description:
 ** main
 */
+#include <dirent.h>
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <stdio.h>
-#define MAX_NOM 14
+#include <stdlib.h>
+#include <pwd.h>
+#include "my.h"
+struct passwd titi;
+struct stat repertoire;
+void afficher_permissions(char *name){
 
-typedef struct {
-    long ino;
-    char nom[MAX_NOM+1];
-}Ent_rep;
+    stat(name, &repertoire);
+    ((repertoire.st_mode & __S_IFDIR) != 0) ? my_putstr("d") : my_putstr("-");
+    ((repertoire.st_mode & S_IRUSR) != 0) ? my_putstr("r") : my_putstr("-");
+    ((repertoire.st_mode & S_IWUSR) != 0) ? my_putstr("w") : my_putstr("-");
+    ((repertoire.st_mode & S_IXUSR) != 0) ? my_putstr("x") : my_putstr("-");
+    ((repertoire.st_mode & S_IRGRP) != 0) ? my_putstr("r") : my_putstr("-");
+    ((repertoire.st_mode & S_IWGRP) != 0) ? my_putstr("w") : my_putstr("-");
+    ((repertoire.st_mode & S_IXGRP) != 0) ? my_putstr("x") : my_putstr("-");
+    ((repertoire.st_mode & S_IROTH) != 0) ? my_putstr("r") : my_putstr("-");
+    ((repertoire.st_mode & S_IWOTH) != 0) ? my_putstr("w") : my_putstr("-");
+    ((repertoire.st_mode & S_IXOTH) != 0) ? my_putstr("x") : my_putstr("-");
 
-typedef struct {
-    int fd;
-    Ent_rep e;
-}REP;
-int main (void){
-REP *ouvrir_rep(char *nomrep);
-Ent_rep *lire_rep(REP *fdr);
-void fermer_rep(REP *fdr);
-
-char *nom;
-struct stat sttamp;
-int stat(const char *, struct stat *);
-printf("%s\n", sttamp.st_dev);
+}
+int my_ls()
+{
+    DIR *dir;
+    struct dirent *rep;
+    if ((dir = opendir(".")) == NULL){
+        return(84);
+    }
+    while ((rep = readdir(dir))){
+        afficher_permissions(rep->d_name);
+        my_putstr("    ");
+        my_putstr(rep->d_name);
+        my_putstr("    ");
+        my_put_nbr(repertoire.st_nlink);
+        my_putstr("    ");
+        my_put_nbr(repertoire.st_size);
+        my_putchar('\n');
+    }
 }
 
+int main (int argc, char **argv)
+{
+    my_ls();
+}
 
