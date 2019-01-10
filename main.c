@@ -53,7 +53,6 @@ void display_result()
 
 int my_ls()
 {
-    char *user;
     if ((dir = opendir(".")) == NULL){
         return(84);
     }
@@ -61,6 +60,7 @@ int my_ls()
         passwd = getpwuid(repertoire.st_uid);
         display_result();
     }
+    return (0);
 }
 
 int main (int argc, char **argv)
