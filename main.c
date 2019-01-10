@@ -13,8 +13,13 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include "my.h"
-struct passwd titi;
 struct stat repertoire;
+DIR *dir;
+struct dirent *rep;
+struct passwd *passwd;
+
+
+
 void afficher_permissions(char *name){
 
     stat(name, &repertoire);
@@ -30,22 +35,31 @@ void afficher_permissions(char *name){
     ((repertoire.st_mode & S_IXOTH) != 0) ? my_putstr("x") : my_putstr("-");
 
 }
+void display_result()
+{
+    if (rep->d_name[0] != '.'){
+        afficher_permissions(rep->d_name);
+        my_putstr("  ");
+        my_put_nbr(repertoire.st_nlink);
+        my_putstr("  ");
+        my_putstr(passwd->pw_name);
+        my_putstr("  ");
+        my_putstr(rep->d_name);
+        my_put_nbr(repertoire.st_size);
+        my_putchar('\n');
+    }
+
+}
+
 int my_ls()
 {
-    DIR *dir;
-    struct dirent *rep;
+    char *user;
     if ((dir = opendir(".")) == NULL){
         return(84);
     }
     while ((rep = readdir(dir))){
-        afficher_permissions(rep->d_name);
-        my_putstr("    ");
-        my_putstr(rep->d_name);
-        my_putstr("    ");
-        my_put_nbr(repertoire.st_nlink);
-        my_putstr("    ");
-        my_put_nbr(repertoire.st_size);
-        my_putchar('\n');
+        passwd = getpwuid(repertoire.st_uid);
+        display_result();
     }
 }
 

@@ -7,7 +7,6 @@
 
 #include <unistd.h>
 extern int my_strlen(char const *str);
-
 void my_putchar(char c)
 {
     write (1, &c, 1);
